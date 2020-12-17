@@ -1,0 +1,59 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: webserver-access
+  labels:
+    strimzi.io/cluster: rbd-cluster
+spec:
+  partitions: 3
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: webserver-access-cleaned
+  labels:
+    strimzi.io/cluster: rbd-cluster
+spec:
+  partitions: 3
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: client
+  labels:
+    strimzi.io/cluster: rbd-cluster
+spec:
+  partitions: 3
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: client-cleaned
+  labels:
+    strimzi.io/cluster: rbd-cluster
+spec:
+  partitions: 3
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: webserver-access-preprocessed
+  labels:
+    strimzi.io/cluster: rbd-cluster
+spec:
+  partitions: 3
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: client-preprocessed
+  labels:
+    strimzi.io/cluster: rbd-cluster
+spec:
+  partitions: 3
+  replicas: 3

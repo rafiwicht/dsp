@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visualization-server
+  labels:
+    app: visualization-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: visualization-server
+  template:
+    metadata:
+      labels:
+        app: visualization-server
+    spec:
+      containers:
+      - name: visualization-server
+        image: wichtr/private:visualization-server-latest
+        imagePullPolicy: Always
+        env:
+          - name: CASSANDRA_SERVER
+            value: cluster1-dc1-service.cass-operator.svc
+          - name: CASSANDRA_PORT
+            value: "9042"
+          - name: CASSANDRA_USER
+            value: {{ cassandra_user }}
+          - name: CASSANDRA_PASSWORD
+            value: {{ cassandra_password }}
+          - name: DEBUG
+            value: "True"
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: visualization-api
+spec:
+  type: NodePort
+  selector: 
+    app: visualization-server
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 31012

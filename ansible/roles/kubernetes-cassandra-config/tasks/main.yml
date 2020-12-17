@@ -1,0 +1,37 @@
+---
+# tasks file for kubernetes-cassandra-config
+
+- name: get cassandra username and password
+  command: kubectl -n cass-operator get secret cluster1-superuser -o json
+  register: result
+
+- name: set cassandra infos
+  set_fact:
+    cassandra_user: "{{ cass_secret['data']['username'] | b64decode }}"
+    cassandra_password: "{{ cass_secret['data']['password'] | b64decode }}"
+  vars:
+    cass_secret: "{{ result['stdout'] | from_json }}"
+
+- name: set system auth replication
+  command: "kubectl -n cass-operator exec -it -c cassandra cluster1-dc2-default-sts-0 -- cqlsh -u {{ cassandra_user }} -p {{ cassandra_password }} --execute=\"alter keyspace system_auth with replication={'class' : 'SimpleStrategy', 'replication_factor' : 3};\""
+  no_log: no
+
+- name: copy kubernetes files
+  copy:
+    src: cassandra-config-manager.yml
+    dest: /tmp
+
+- name: copy cred config
+  template:
+    src: "{{ item }}.j2"
+    dest: "/tmp/{{ item }}"
+  with_items:
+      - cassandra-config.yml
+      - cassandra-regcred.yml
+
+- name: apply cassandra config manager
+  command: "kubectl apply -f /tmp/{{ item }} -n cass-operator"
+  with_items:
+    - cassandra-regcred.yml
+    - cassandra-config.yml
+    - cassandra-config-manager.yml

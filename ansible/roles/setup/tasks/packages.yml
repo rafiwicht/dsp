@@ -1,0 +1,55 @@
+---
+
+# Install packages and update/prepare os
+
+- name: Add docker repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    force: yes
+
+- name: Add kubernetes repo
+  copy:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+
+#- name: update packages
+#  yum:
+#    name: '*'
+#    state: latest
+
+#- name: install packages
+#  yum:
+#    name: "{{ packages }}"
+#    state: present
+
+- name: install packages
+  command: "yum install -y {{ item }}"
+  with_items: "{{ packages }}"
+
+- name: start and enable firewalld
+  systemd:
+    name: firewalld.service
+    state: started
+    enabled: yes
+
+- name: create etc docker
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: copy daemon json for cgroup driver systemd
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: create docker.service.d directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: start and enable docker
+  systemd:
+    name: docker.service
+    state: restarted
+    enabled: yes

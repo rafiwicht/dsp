@@ -1,0 +1,13 @@
+---
+
+- name: test
+  hosts: localhost
+  tasks:
+    - debug:
+        msg: "{{ out | regex_search(regexp,'\\1') | first }}"
+  vars:
+    out: >
+      NAME                         READY   STATUS    RESTARTS   AGE
+      generator-6b68f66566-rhkdk   1/1     Running   0          11m
+      kafkacat-7b96df4fdb-bv9sz    1/1     Running   0          11m
+    regexp: '(kafkacat-[a-z0-9]{10}-[a-z0-9]{5})'

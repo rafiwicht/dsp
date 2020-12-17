@@ -1,0 +1,8 @@
+---
+# Create virtual machines on
+
+- name: Create the VMs on SWITCHengines
+  hosts: localhost
+  roles:
+    - openstack-env
+  environment: "{{ openstack_env }}"

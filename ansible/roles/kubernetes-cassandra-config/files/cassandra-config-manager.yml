@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cassandra-config-manager
+  labels:
+    app: cassandra-config-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cassandra-config-manager
+  template:
+    metadata:
+      labels:
+        app: cassandra-config-manager
+    spec:
+      containers:
+      - name: cassandra-config-manager
+        image: wichtr/private:ccm-latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: ccm-configmap
+          mountPath: /etc/cassandra-config-manager
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+      - name: ccm-configmap
+        configMap:
+          name: cassandra-config-manager
+          

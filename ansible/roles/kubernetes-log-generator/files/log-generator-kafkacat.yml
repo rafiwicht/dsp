@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafkacat
+  labels:
+    app: kafkacat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafkacat
+  template:
+    metadata:
+      labels:
+        app: kafkacat
+    spec:
+      containers:
+      - name: kafkacat
+        image: wichtr/private:kafkacat-latest
+        imagePullPolicy: Always
+      imagePullSecrets:
+        - name: regcred

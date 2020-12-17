@@ -1,0 +1,58 @@
+---
+# tasks file for openstack-env
+
+- name: remove inventory file
+  file:
+    path: ../inventories/openstack/hosts.yml
+    state: absent
+
+- name: remove instances
+  os_server:
+    name: "{{ item }}"
+    state: absent
+    region_name: "{{ lookup('env', 'OS_REGION_NAME') }}"
+  environment: "{{ openstack_env }}"
+  with_items: "{{ instances }}"
+
+- name: remove additional volumes
+  os_volume:
+    state: absent
+    display_name: "vol-{{ item }}"
+  with_items: "{{ instances }}"
+  environment: "{{ openstack_env }}"
+
+- name: delete remote keypair
+  os_keypair:
+    name: kubkey
+    state: absent
+  environment: "{{ openstack_env }}"
+
+- name: remove local keypair
+  file:
+    dest: "~/.ssh/id_rsa_kub"
+    state: absent
+
+- name: remove router
+  os_router:
+    state: absent
+    name: kub
+  environment: "{{ openstack_env }}"
+
+- name: remove subnet
+  os_subnet:
+    state: absent
+    name: net1subnet
+  environment: "{{ openstack_env }}"
+
+- name: remove network
+  os_network:
+    state: absent
+    name: net-kub
+  environment: "{{ openstack_env }}"
+
+- name: remove security group
+  tags: bootstrap
+  os_security_group:
+    name: sg-kub
+    state: absent
+  environment: "{{ openstack_env }}"

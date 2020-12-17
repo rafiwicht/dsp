@@ -1,0 +1,20 @@
+---
+# tasks file for kubernetes-storage-provisioner
+
+- name: copy kubernetes files
+  copy:
+    src: "{{ item }}"
+    dest: /tmp
+  with_items:
+    - storage-class.yml
+    - storage-provisioner.yml
+    - storage-service.yml
+    #- local-storage.yml
+
+- name: apply storage provisioner
+  command: "kubectl apply -f /tmp/{{ item }}"
+  with_items:
+    - storage-class.yml
+    - storage-provisioner.yml
+    - storage-service.yml
+    #- local-storage.yml

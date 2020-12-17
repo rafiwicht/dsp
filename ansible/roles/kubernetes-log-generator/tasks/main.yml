@@ -1,0 +1,50 @@
+---
+# tasks file for kubernetes-log-generator
+
+- name: copy kubernetes files
+  copy:
+    src: "{{ item }}"
+    dest: /tmp
+  with_items:
+    - log-generator-namespace.yml
+    - log-generator-log-generator-config.yml
+    - log-generator-logstash-config.yml
+    - log-generator-generator.yml
+    - log-generator-kafkacat.yml
+
+- name: copy cred config
+  template:
+    src: log-generator-regcred.yml.j2
+    dest: /tmp/log-generator-regcred.yml
+
+- name: apply log generator and kafkacatssh webe
+  command: "kubectl apply -f /tmp/{{ item }} -n log-generator"
+  with_items:
+    - log-generator-namespace.yml
+    - log-generator-regcred.yml
+    - log-generator-log-generator-config.yml
+    - log-generator-logstash-config.yml
+    - log-generator-generator.yml
+    - log-generator-kafkacat.yml
+
+- name: delay
+  wait_for:
+    timeout: 20
+  delegate_to: localhost
+
+- name: get log generator
+  command: kubectl get pods -n log-generator
+  register: result
+
+- name: apply kafka cluster
+  template:
+    src: consumer.sh.j2
+    dest: "/home/centos/consumer-{{ item }}.sh"
+    mode: 0700
+  with_items:
+    - webserver-access
+    - webserver-access-cleaned
+    - webserver-access-preprocessed
+    - client
+    - client-cleaned
+    - client-preprocessed

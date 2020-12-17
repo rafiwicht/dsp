@@ -1,0 +1,22 @@
+---
+# tasks file for kafka
+
+- name: copy kubernetes files
+  copy:
+    src: "{{ item }}"
+    dest: /tmp
+  with_items:
+    - kafka-namespace.yml
+    - kafka-cluster.yml
+    - kafka-topic.yml
+    - strimzi-cluster-operator-0.16.2.yml
+
+- name: create kafka namespace
+  command: kubectl apply -f /tmp/kafka-namespace.yml
+
+- name: apply kafka cluster
+  command: "kubectl apply -f /tmp/{{ item }} -n kafka"
+  with_items:
+    - strimzi-cluster-operator-0.16.2.yml
+    - kafka-cluster.yml
+    - kafka-topic.yml

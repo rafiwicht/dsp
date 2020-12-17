@@ -1,0 +1,10 @@
+---
+
+# installs kubernetes on cluster
+
+- name: setup hosts
+  hosts: masters
+  roles:
+    - kubernetes-storage-provisioner
+    - kubernetes-kafka
+    - kubernetes-cassandra

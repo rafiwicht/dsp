@@ -1,0 +1,51 @@
+---
+# tasks file for node
+
+- name: create mount points for local persisitent volumes
+  become: yes
+  file:
+    path: "/mnt/disks/{{ item }}"
+    state: directory
+  with_items:
+    - ssd1
+    - ssd2
+    - ssd3
+    - ssd4
+
+- name: Create a new primary partitions
+  parted:
+    device: /dev/vdb
+    number: "{{ item }}"
+    state: present
+    part_start: "{{ 25*item-25 }}%"
+    part_end: "{{ 25*item }}%"
+  with_items:
+    - 1
+    - 2
+    - 3
+    - 4
+
+- name: Create filesystems
+  filesystem:
+    fstype: ext4
+    dev: "/dev/vdb{{ item }}"
+  with_items:
+    - 1
+    - 2 
+    - 3
+    - 4
+
+- name: mount disks
+  mount:
+    path: "/mnt/disks/ssd{{ item }}"
+    src: "/dev/vdb{{ item }}"
+    fstype: ext4
+    state: mounted
+  with_items:
+    - 1
+    - 2
+    - 3
+    - 4
+
+- name: Join the node to cluster
+  command: "{{ hostvars[groups['masters'][0]]['join_command']}}"

@@ -1,0 +1,37 @@
+---
+# tasks file for visualization
+
+- name: get cassandra username and password
+  command: kubectl -n cass-operator get secret cluster1-superuser -o json
+  register: result
+
+- name: set cassandra infos
+  set_fact:
+    cassandra_user: "{{ cass_secret['data']['username'] | b64decode }}"
+    cassandra_password: "{{ cass_secret['data']['password'] | b64decode }}"
+  vars:
+    cass_secret: "{{ result['stdout'] | from_json }}"
+
+- name: copy kubernetes files
+  copy:
+    src: "{{ item }}"
+    dest: /tmp
+  with_items:
+    - visualization-namespace.yml
+    - visualization-client.yml
+
+- name: copy cred config
+  template:
+    src: "{{ item }}.j2"
+    dest: "/tmp/{{ item }}"
+  with_items:
+    - visualization-regcred.yml
+    - visualization-server.yml
+
+- name: apply kafka cluster
+  command: "kubectl apply -f /tmp/{{ item }} -n visualization"
+  with_items:
+    - visualization-namespace.yml
+    - visualization-regcred.yml
+    - visualization-client.yml
+    - visualization-server.yml

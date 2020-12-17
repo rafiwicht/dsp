@@ -1,0 +1,6 @@
+webserver: /var/log/apache_access.log
+client: /var/log/client.log
+modes:
+  - times: 10000
+    latency_level: 1
+    intensity_level: 1

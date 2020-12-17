@@ -1,0 +1,88 @@
+---
+
+- name: apply flink jobs
+  hosts: localhost
+  tasks:
+    - name: get cassandra username and password
+      command: kubectl -n cass-operator get secret cluster1-superuser -o json
+      register: result
+
+    - name: set cassandra infos
+      set_fact:
+        cassandra_user: "{{ cass_secret['data']['username'] | b64decode }}"
+        cassandra_password: "{{ cass_secret['data']['password'] | b64decode }}"
+      vars:
+        cass_secret: "{{ result['stdout'] | from_json }}"
+
+    - name: generate flink job
+      template:
+        src: flink_job.yml.j2
+        dest: /tmp/{{ item.name }}-job.yml
+      with_items: "{{ jobs }}"
+
+    - name: apply flink job
+      tags: apply_jobs
+      command: kubectl apply -f /tmp/{{ item.name }}-job.yml
+      with_items: "{{ jobs }}"
+  vars:
+    jobs:
+      - name: access-parser-java
+        args:
+            - name: bootstrapServers
+              value: my-cluster-kafka-brokers.kafka.svc:9092
+            - name: consumerTopic
+              value: webserver-access
+            - name: producerTopic
+              value:  webserver-access-cleaned
+      - name: client-parser-java
+        args:
+            - name: bootstrapServers
+              value: my-cluster-kafka-brokers.kafka.svc:9092
+            - name: consumerTopic
+              value: client
+            - name: producerTopic
+              value: client-cleaned
+      - name: malicious-access
+        args:
+          - name: bootstrapServers
+            value: my-cluster-kafka-brokers.kafka.svc:9092
+          - name: consumerTopic
+            value: webserver-access-cleaned
+          - name: cassandraServers
+            value: cluster1-dc1-service.cass-operator.svc
+          - name: cassandraPort
+            value: "9042"
+          - name: cassandraUser
+            value: "{{ cassandra_user }}"
+          - name: cassandraPassword
+            value: "{{ cassandra_password }}"
+      - name: latency-streaming
+        args:
+          - name: bootstrapServers
+            value: my-cluster-kafka-brokers.kafka.svc:9092
+          - name: consumerTopicWeb
+            value: webserver-access-cleaned
+          - name: consumerTopicClient
+            value: client-cleaned
+          - name: cassandraServers
+            value: cluster1-dc1-service.cass-operator.svc
+          - name: cassandraPort
+            value: "9042"
+          - name: cassandraUser
+            value: "{{ cassandra_user }}"
+          - name: cassandraPassword
+            value: "{{ cassandra_password }}"
+      - name: popular-pages
+        args:
+          - name: bootstrapServers
+            value: my-cluster-kafka-brokers.kafka.svc:9092
+          - name: consumerTopic
+            value: webserver-access-cleaned
+          - name: cassandraServers
+            value: cluster1-dc1-service.cass-operator.svc
+          - name: cassandraPort
+            value: "9042"
+          - name: cassandraUser
+            value: "{{ cassandra_user }}"
+          - name: cassandraPassword
+            value: "{{ cassandra_password }}"

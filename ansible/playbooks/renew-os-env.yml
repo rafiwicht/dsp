@@ -1,0 +1,16 @@
+---
+# Create virtual machines on
+
+- name: Create the VMs on SWITCHengines
+  hosts: localhost
+  tasks:
+    - name: remove openstack env
+      include_role:
+        name: openstack-env
+        tasks_from: remove
+
+- name: Create the VMs on SWITCHengines
+  hosts: localhost
+  roles:
+    - openstack-env
+  environment: "{{ openstack_env }}"

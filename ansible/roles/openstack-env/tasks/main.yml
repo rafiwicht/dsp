@@ -1,0 +1,104 @@
+---
+# tasks file for openstack-env
+
+- name: test for presence of local keypair
+  stat: path="~/.ssh/id_rsa_kub"
+  register: testenv_keypair_local
+
+- name: delete remote keypair
+  os_keypair:
+    name: kubkey
+    state: absent
+  when: not testenv_keypair_local.stat.exists
+
+- name: create the keypair
+  os_keypair:
+    name: kubkey
+    state: present
+  register: testenv_keypair
+
+- debug:
+    msg: "{{ testenv_keypair }}"
+
+- name: persist the keypair
+  copy:
+    dest: "~/.ssh/id_rsa_kub"
+    content: "{{ testenv_keypair.key.private_key }}"
+    mode: 0600
+  when: testenv_keypair.changed
+
+- name: create network
+  os_network:
+    state: present
+    name: net-kub
+
+- name: create subnet
+  os_subnet:
+    state: present
+    network_name: net-kub
+    name: net1subnet
+    cidr: 192.168.1.0/24
+
+- name: create router
+  os_router:
+    state: present
+    name: kub
+    network: public
+    interfaces:
+      - net1subnet
+
+- name: Create security group
+  tags: bootstrap
+  os_security_group:
+    name: sg-kub
+    state: present
+
+- name: Allow from same sec group
+  tags: bootstrap
+  os_security_group_rule:
+    security_group: sg-kub
+    remote_group: sg-kub
+
+- name: Allow TCP ports
+  tags: bootstrap
+  os_security_group_rule:
+    security_group: sg-kub
+    remote_ip_prefix: 0.0.0.0/0
+    protocol: tcp
+    port_range_min: "{{item}}"
+    port_range_max: "{{item}}"
+  with_items: "{{ ports }}"
+
+- name: create additional volumes
+  os_volume:
+    state: present
+    display_name: "vol-{{ item }}"
+    size: 100
+  with_items: "{{ instances }}"
+
+- name: launch an instance
+  os_server:
+    name: "{{ item }}"
+    state: present
+    region_name: "{{ lookup('env', 'OS_REGION_NAME') }}"
+    image: "CentOS 7 (SWITCHengines)"
+    security_groups: sg-kub
+    flavor: m1.large
+    key_name: kubkey
+    nics:
+      - net-name: net-kub
+    volumes:
+      - "vol-{{ item }}"
+  register: osinstance
+  environment: "{{ openstack_env }}"
+  with_items: "{{ instances }}"
+
+- name: create inventory folder
+  file:
+    path: ../inventories/openstack
+    state: directory
+
+- name: Add new VM to ansible inventory
+  template:
+    src: hosts.yml.j2
+    dest: ../inventories/openstack/hosts.yml

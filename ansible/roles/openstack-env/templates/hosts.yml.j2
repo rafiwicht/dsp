@@ -1,0 +1,18 @@
+all:
+  children:
+    masters:
+      hosts:
+        {{ osinstance.results[0].server.name }}:
+          ansible_host: {{ osinstance.results[0].server.public_v4}}
+          ansible_user: centos
+          ansible_ssh_common_args: -i ~/.ssh/id_rsa_kub -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+{% if osinstance.results|length > 1 %}
+    slaves:
+      hosts:
+{% endif %}
+{% for i in range(1, osinstance.results|length) %}
+        {{ osinstance.results[i].server.name }}:
+          ansible_host: {{ osinstance.results[i].server.public_v4}}
+          ansible_user: centos
+          ansible_ssh_common_args: -i ~/.ssh/id_rsa_kub -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+{% endfor %}

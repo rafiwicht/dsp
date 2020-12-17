@@ -1,0 +1,50 @@
+---
+# tasks file for kubernetes-flink
+
+- name: copy kubernetes files
+  copy:
+    src: "{{ item }}"
+    dest: /tmp
+  with_items:
+    - flink-namespace.yml
+    - flink-rbac.yml
+
+- name: create flink namespace
+  command: kubectl apply -f /tmp/flink-namespace.yml
+
+- name: apply flink rbac
+  command: kubectl apply -f /tmp/flink-rbac.yml -n flink
+
+- name: download flink
+  get_url:
+    url: https://downloads.apache.org/flink/flink-1.10.0/flink-1.10.0-bin-scala_2.12.tgz
+    dest: /tmp/flink-1.10.0.tgz
+
+- name: Extract flink.tgz into /opt/flink
+  become: yes
+  unarchive:
+    src: /tmp/flink-1.10.0.tgz
+    dest: /opt
+    owner: centos
+    group: centos
+    remote_src: yes
+
+- name: change ownership of files
+  file:
+    path: /opt/flink-1.10.0
+    owner: centos
+    group: centos
+    recurse: yes
+
+- name: create link from /opt/flink to /opt/flink-VERSION
+  become: yes
+  file:
+    src: /opt/flink-1.10.0
+    dest: /opt/flink
+    owner: centos
+    group: centos
+    state: link
+    force: yes
+
+- name: start flink
+  command: /opt/flink/bin/kubernetes-session.sh -Dkubernetes.cluster-id=flink-rbd -Dkubernetes.namespace=flink -Dkubernetes.jobmanager.service-account=flink

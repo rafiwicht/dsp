@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://rwicht.ch/webserver-access.schema.json",
+    "title": "Event",
+    "description": "An event for the from cleaned webserver access logs",
+    "type": "object",
+    "properties": {
+        "ip": {
+            "type": "string"
+        },
+        "user": {
+            "type": "string"
+        },
+        "timestamp": {
+            "type": "integer"
+        },
+        "method": {
+            "type": "string"
+        },
+        "path": {
+            "type": "string"
+        },
+        "httpVersion": {
+            "type": "string"
+        },
+        "httpCode": {
+            "type": "integer"
+        },
+        "bytes": {
+            "type": "integer"
+        },
+        "referer": {
+            "type": "string"
+        },
+        "userAgent": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "ip",
+        "user",
+        "timestamp",
+        "method",
+        "path",
+        "httpVersion",
+        "httpCode",
+        "bytes",
+        "referer",
+        "userAgent"
+    ]
+}

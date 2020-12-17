@@ -1,0 +1,10 @@
+---
+# vars file for flink-jobs
+
+flink_helpers:
+  - helper
+
+flink_jobs:
+  - access-parser-java
+  - client-parser-java
+  - malicious-access

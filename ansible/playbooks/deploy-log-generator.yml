@@ -1,0 +1,8 @@
+---
+
+# Deploy log generator of kubernetes
+
+- name: setup hosts
+  hosts: masters
+  roles:
+    - kubernetes-log-generator

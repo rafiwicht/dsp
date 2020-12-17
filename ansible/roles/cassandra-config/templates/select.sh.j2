@@ -1,0 +1,3 @@
+#!/bin/bash
+
+kubectl -n cass-operator exec -c cassandra cluster1-dc1-default-sts-0 -- cqlsh -u {{ cassandra_user }} -p {{ cassandra_password }} --execute="SELECT * from {{ item }}.result;"

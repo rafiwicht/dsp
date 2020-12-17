@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+data:
+  webserver-access.conf: |-
+    input {
+      file {
+        path => "/var/log/apache_access.log"
+        tags => ["access"]
+      }
+    }
+    filter {
+        if "access" in [tags] {
+            grok {
+                match => { "message" => "%{COMBINEDAPACHELOG}" }
+                remove_field => [ "@timestamp", "@version", "ident", "host", "message" ]
+            }
+            date {
+                match => [ "timestamp","d/MMM/yyyy:HH:mm:ss.SSS Z" ]
+                target => "timestamp"
+            }
+            ruby { 
+                code => 'event.set( "timestamp", (event.get("timestamp").to_f * 1000).to_i)' 
+            }
+            mutate {
+                rename => { "verb" => "method" }
+                rename => { "clientip" => "ip" }
+                rename => { "response" => "httpCode" }
+                rename => { "auth" => "user" }
+                rename => { "request" => "path" }
+                rename => { "agent" => "userAgent" }
+                rename => { "referrer" => "referer" }
+                rename => { "httpversion" => "httpVersion" }
+                convert => {
+                    "bytes" => "integer"
+                    "httpCode" => "integer"
+                }
+                gsub => [
+                    "userAgent", "\"", "",
+                    "referer", "\"", ""
+                ]
+            }
+        }
+        
+    }
+    output {
+        if "access" in [tags] {
+            kafka {
+              codec => json
+              bootstrap_servers => "rbd-cluster-kafka-brokers.kafka.svc:9092"
+              topic_id => "webserver-access-preprocessed"
+            }
+        }
+    }
+  client.conf: |-
+    input {
+        file {
+            path => "/var/log/client.log"
+            tags => ["client"]
+        }
+    }
+    filter {
+        if "client" in [tags] {
+            grok {
+                match => { "message" => "%{DATE_EU:date} %{TIME:time}.%{INT:milis} %{NOTSPACE:javaFile} %{WORD:thread} %{WORD:logLevel}: user=%{USER:user} resource=%{UNIXPATH:resource}" }
+                remove_field => [  "@timestamp", "@version", "host", "message" ]
+            }
+            mutate {
+                add_field => { "timestamp" => "%{date} %{time}.%{milis}" }
+                remove_field => [ "date", "time", "milis" ]
+            }
+            date {
+                match => [ "timestamp","dd.MM.yyyy HH:mm:ss.SSS" ]
+                target => "timestamp"
+            }
+            ruby {
+                code => 'event.set( "timestamp", (event.get("timestamp").to_f * 1000).to_i)'
+            }
+        }
+    }
+    output {
+        if "client" in [tags] {
+            kafka {
+                codec => json
+                bootstrap_servers => "rbd-cluster-kafka-brokers.kafka.svc:9092"
+                topic_id => "client-preprocessed"
+            }
+        }
+    }

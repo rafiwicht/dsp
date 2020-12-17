@@ -1,0 +1,45 @@
+---
+# tasks file for flink-operator
+
+- name: install go
+  become: yes
+  get_url:
+    url: https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+    dest: /tmp/go1.14.1.linux-amd64.tar.gz
+
+- name: unarchive go file
+  become: yes
+  unarchive:
+    src: /tmp/go1.14.1.linux-amd64.tar.gz
+    dest: /usr/local
+    remote_src: yes
+
+- name: Add variable profile
+  become: yes
+  lineinfile:
+    path: /etc/profile
+    state: present
+    line: "{{ item }}"
+  with_items:
+    - export GOROOT=/usr/local/go
+    - export PATH=$GOROOT/bin:$PATH
+
+- name: clone operator git repo
+  git:
+    repo: 'https://github.com/GoogleCloudPlatform/flink-on-k8s-operator.git'
+    dest: /home/centos/flink-on-k8s-operator/
+    update: yes
+
+- name: make docker image
+  become: yes
+  make:
+    chdir: /home/centos/flink-on-k8s-operator/
+    target: operator-image
+
+- name: deploy docker image
+  make:
+    chdir: /home/centos/flink-on-k8s-operator/
+    target: deploy
+  environment:
+    PATH: /usr/local/go/bin:{{ ansible_env.PATH }}
+

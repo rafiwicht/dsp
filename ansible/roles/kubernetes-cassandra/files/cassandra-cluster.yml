@@ -1,0 +1,44 @@
+apiVersion: "db.orange.com/v1alpha1"
+kind: "CassandraCluster"
+metadata:
+  name: rbd-cassandra
+  labels:
+    cluster: k8s.kaas
+spec:
+  cassandraImage: cassandra:3.11
+  configMapName: cassandra-configmap
+  dataCapacity: "10Gi"
+  dataStorageClass: "disks"
+  imagepullpolicy: IfNotPresent  
+  hardAntiAffinity: false           
+  deletePVC: true
+  autoPilot: false
+  gcStdout: true
+  autoUpdateSeedList: false
+  maxPodUnavailable: 1
+  runAsUser: 999
+  resources:         
+    requests:
+      cpu: '1'
+      memory: 512Mi
+    limits:
+      cpu: '1'
+      memory: 512Mi
+  topology:
+    dc:
+      - name: dc1
+        nodesPerRacks: 1
+        rack:
+          - name: default
+      - name: dc2
+        nodesPerRacks: 1
+        rack:
+          - name: default
+      - name: dc3
+        nodesPerRacks: 1
+        rack:
+          - name: default
+      - name: dc4
+        nodesPerRacks: 1
+        rack:
+          - name: default

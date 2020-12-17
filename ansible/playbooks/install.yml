@@ -1,0 +1,21 @@
+---
+
+# installs kubernetes on cluster
+
+- name: setup hosts
+  hosts: all
+  become: yes
+  roles:
+    - setup
+
+- name: setup master
+  hosts: masters
+  become: yes
+  roles:
+    - master
+
+- name: setup slaves
+  hosts: slaves
+  become: yes
+  roles:
+    - slave

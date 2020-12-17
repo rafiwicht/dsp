@@ -1,0 +1,8 @@
+---
+
+# Deploy kafka on kubernetes
+
+- name: setup hosts
+  hosts: masters
+  roles:
+    - kubernetes-flink

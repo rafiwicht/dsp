@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+data:
+  webserver-access.conf: |-
+    input {
+      file {
+        path => "/var/log/apache_access.log"
+        tags => ["access"]
+      }
+    }
+    output {
+      if "access" in [tags] {
+        kafka {
+          codec => json
+          bootstrap_servers => "my-cluster-kafka-bootstrap.kafka.svc:9092"
+          topic_id => "webserver-access"
+        }
+      }
+    }
+  client.conf: |-
+    input {
+      file {
+        path => "/var/log/client.log"
+        tags => ["client"]
+      }
+    }
+    output {
+      if "client" in [tags] {
+        kafka {
+          codec => json
+          bootstrap_servers => "my-cluster-kafka-bootstrap.kafka.svc:9092"
+          topic_id => "client"
+        }
+      }
+    }

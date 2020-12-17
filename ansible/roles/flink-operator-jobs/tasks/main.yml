@@ -1,0 +1,53 @@
+---
+# tasks file for flink-jobs
+
+- name: get cassandra username and password
+  command: kubectl -n cass-operator get secret cluster1-superuser -o json
+  register: result
+
+- name: set cassandra infos
+  set_fact:
+    cassandra_user: "{{ cass_secret['data']['username'] | b64decode }}"
+    cassandra_password: "{{ cass_secret['data']['password'] | b64decode }}"
+  vars:
+    cass_secret: "{{ result['stdout'] | from_json }}"
+
+- name: copy cred config
+  template:
+    src: flink-operator-jobs-regcred.yml.j2
+    dest: /tmp/flink-operator-jobs-regcred.yml
+
+- name: apply opoerator secret
+  command: kubectl apply -f /tmp/flink-operator-jobs-regcred.yml
+
+- name: generate flink job
+  template:
+    src: flink-job.yml.j2
+    dest: /tmp/{{ item.name }}-job.yml
+  with_items: "{{ jobs }}"
+
+- name: apply flink job
+  command: kubectl apply -f /tmp/{{ item.name }}-job.yml
+  with_items: "{{ jobs }}"
+
+- name: copy jobs refresh
+  template: 
+    src: refresh.sh.j2
+    dest: /home/centos/refresh.sh
+    mode: 0700
+
+- name: copy jobs delete
+  template: 
+    src: delete.sh.j2
+    dest: /home/centos/delete.sh
+    mode: 0700
+
+- name: copy ext services
+  template: 
+    src: external-service.yml.j2
+    dest: /tmp/external-service-{{ item.1.name }}.yml
+  with_indexed_items: "{{ jobs }}"
+
+- name: apply ext services
+  command: kubectl apply -f /tmp/external-service-{{ item.name }}.yml
+  with_items: "{{ jobs }}"

@@ -1,0 +1,43 @@
+---
+
+# Configure kubernetes
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+#- name: copy file for portforwarding
+#  copy:
+#    src: master_node_name
+#    dest: "/etc/sysctl.d/{{ groups['masters'][0] }}.conf"
+
+#- name: reload config
+#  command: sysctl --system
+
+- name: disable selinux
+  selinux:
+    state: disabled
+
+- name: enable kublet
+  systemd:
+    name: kubelet.service
+    enabled: yes
+
+- name: basic firewall rules
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  with_items:
+    - 1024-49151/tcp
+    - 179/tcp

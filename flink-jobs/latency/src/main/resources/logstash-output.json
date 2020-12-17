@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://rwicht.ch/webserver-access.schema.json",
+    "title": "Event",
+    "description": "An event for the from logstash",
+    "type": "object",
+    "properties": {
+        "message": {
+            "type": "string"
+        },
+        "path": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "@timestamp": {
+            "type": "string"
+        },
+        "host": {
+            "type": "string"
+        },
+        "@version": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "message",
+        "path",
+        "tags",
+        "@timestamp",
+        "host",
+        "@version"
+    ]
+}

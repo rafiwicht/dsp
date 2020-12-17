@@ -1,0 +1,7 @@
+FROM python:3.8.1-buster
+
+WORKDIR /server
+COPY requirements.txt /server
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD [ "python", "main.py" ]

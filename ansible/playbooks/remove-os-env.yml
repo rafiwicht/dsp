@@ -1,0 +1,10 @@
+---
+# remove virtual machines, key and network
+
+- name: Create the VMs on SWITCHengines
+  hosts: localhost
+  tasks:
+    - name: remove openstack env
+      include_role:
+        name: openstack-env
+        tasks_from: remove

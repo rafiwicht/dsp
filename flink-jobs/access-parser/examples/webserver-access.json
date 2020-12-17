@@ -1,0 +1,8 @@
+{
+  "@timestamp":"2020-03-03T18:52:06.383Z",
+  "tags":["access"],
+  "@version":"1",
+  "message":"43.215.54.198 - 0fcd5dbc-fc67-4512-a93e-37c4fa2559d2 [3/Mar/2020:18:52:05 +0000] \"GET /extension/45334 HTTP/1.1\" 200 2799 \"http://www.buttercupgames.com/category\" \"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.46 Safari/536.5\"",
+  "path":"/var/log/apache_access.log",
+  "host":"generator-6b68f66566-rmw6m"
+}

@@ -1,0 +1,108 @@
+{
+    "ip": "38.80.118.123",
+    "referer": "",
+    "tags": [
+        "access"
+    ],
+    "bytes": 3641,
+    "path": "/cart/208086",
+    "message": "38.80.118.123 - 6b45a853-5c3f-4d10-8e3c-18c846a82f88 [7/Jun/2020:14:44:47.579 +0000] \"PUT /cart/208086 HTTP/1.1\" 404 3641 \"\" \"Java HTTP Client/v1.23.0\"",
+    "timestamp1": "2020-06-07T14:44:47.579Z",
+    "timestamp": "7/Jun/2020:14:44:47.579 +0000",
+    "userAgent": "Java HTTP Client/v1.23.0",
+    "method": "PUT",
+    "user": "6b45a853-5c3f-4d10-8e3c-18c846a82f88",
+    "timestamp2": 1591541087579,
+    "httpVersion": "1.1",
+    "httpCode": 404
+}{
+    "resource": "/catalog/103923",
+    "tags": [
+        "client"
+    ],
+    "path": "/var/log/client.log",
+    "message": "07.06.2020 14:44:49.296 com.rwicht.java.client main INFO: user=c5312285-4dbb-4733-970b-080720641d6a resource=/catalog/103923",
+    "thread": "main",
+    "@timestamp": "2020-06-07T14:44:50.063Z",
+    "timestamp": 1591541089296,
+    "javaFile": "com.rwicht.java.client",
+    "user": "c5312285-4dbb-4733-970b-080720641d6a",
+    "logLevel": "INFO"
+}{
+    "resource": "/cart",
+    "tags": [
+        "client"
+    ],
+    "path": "/var/log/client.log",
+    "message": "07.06.2020 14:44:49.530 com.rwicht.java.client main INFO: user=bed550d6-3845-49e8-a010-2ce3aefb80ec resource=/cart",
+    "thread": "main",
+    "@timestamp": "2020-06-07T14:44:50.065Z",
+    "timestamp": 1591541089530,
+    "javaFile": "com.rwicht.java.client",
+    "user": "bed550d6-3845-49e8-a010-2ce3aefb80ec",
+    "logLevel": "INFO"
+}{
+    "ip": "252.115.156.81",
+    "referer": "",
+    "tags": [
+        "access"
+    ],
+    "bytes": 4678,
+    "path": "/catalog/103923",
+    "message": "252.115.156.81 - c5312285-4dbb-4733-970b-080720641d6a [7/Jun/2020:14:44:49.293 +0000] \"PUT /catalog/103923 HTTP/1.1\" 400 4678 \"\" \"Java HTTP Client/v1.23.0\"",
+    "timestamp1": "2020-06-07T14:44:49.293Z",
+    "timestamp": "7/Jun/2020:14:44:49.293 +0000",
+    "userAgent": "Java HTTP Client/v1.23.0",
+    "method": "PUT",
+    "user": "c5312285-4dbb-4733-970b-080720641d6a",
+    "timestamp2": 1591541089293,
+    "httpVersion": "1.1",
+    "httpCode": 400
+}{
+    "ip": "237.153.90.96",
+    "referer": "",
+    "tags": [
+        "access"
+    ],
+    "bytes": 4535,
+    "path": "/cart",
+    "message": "237.153.90.96 - bed550d6-3845-49e8-a010-2ce3aefb80ec [7/Jun/2020:14:44:49.528 +0000] \"POST /cart HTTP/1.1\" 201 4535 \"\" \"Java HTTP Client/v1.23.0\"",
+    "timestamp1": "2020-06-07T14:44:49.528Z",
+    "timestamp": "7/Jun/2020:14:44:49.528 +0000",
+    "userAgent": "Java HTTP Client/v1.23.0",
+    "method": "POST",
+    "user": "bed550d6-3845-49e8-a010-2ce3aefb80ec",
+    "timestamp2": 1591541089528,
+    "httpVersion": "1.1",
+    "httpCode": 201
+}{
+    "resource": "/extension",
+    "tags": [
+        "client"
+    ],
+    "path": "/var/log/client.log",
+    "message": "07.06.2020 14:44:50.635 com.rwicht.java.client main INFO: user=7f11018a-38a6-47d5-9a8a-55848b8026aa resource=/extension",
+    "thread": "main",
+    "@timestamp": "2020-06-07T14:44:51.067Z",
+    "timestamp": 1591541090635,
+    "javaFile": "com.rwicht.java.client",
+    "user": "7f11018a-38a6-47d5-9a8a-55848b8026aa",
+    "logLevel": "INFO"
+}{
+    "ip": "116.17.42.241",
+    "referer": "",
+    "tags": [
+        "access"
+    ],
+    "bytes": 4448,
+    "path": "/extension",
+    "message": "116.17.42.241 - 7f11018a-38a6-47d5-9a8a-55848b8026aa [7/Jun/2020:14:44:50.633 +0000] \"GET /extension HTTP/1.1\" 200 4448 \"\" \"Java HTTP Client/v1.23.0\"",
+    "timestamp1": "2020-06-07T14:44:50.633Z",
+    "timestamp": "7/Jun/2020:14:44:50.633 +0000",
+    "userAgent": "Java HTTP Client/v1.23.0",
+    "method": "GET",
+    "user": "7f11018a-38a6-47d5-9a8a-55848b8026aa",
+    "timestamp2": 1591541090633,
+    "httpVersion": "1.1",
+    "httpCode": 200
+}

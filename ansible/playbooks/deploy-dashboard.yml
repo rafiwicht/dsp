@@ -1,0 +1,8 @@
+---
+
+# Deploy dashboard
+
+- name: deploy dashboard
+  hosts: masters
+  roles:
+    - kubernetes-dashboard

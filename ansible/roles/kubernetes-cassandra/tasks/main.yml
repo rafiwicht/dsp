@@ -1,0 +1,30 @@
+---
+# tasks file for kubernetes-cassandra
+
+- name: copy kubernetes files
+  copy:
+    src: "{{ item }}"
+    dest: /tmp/
+  with_items:
+    - cassandra-namespace.yml
+    - cassandra-crd.yml
+    - cassandra-cluster.yml
+    - cassandra-cluster-config.yml
+
+- name: apply kubernetes
+  command: "kubectl apply -f /tmp/{{ item }} -n cassandra"
+  with_items:
+    - cassandra-namespace.yml
+    - cassandra-crd.yml
+
+- name: add helm repo for operator
+  command: helm repo add orange-incubator https://orange-kubernetes-charts-incubator.storage.googleapis.com
+
+- name: deploy operator
+  command: helm install casskop orange-incubator/cassandra-operator --namespace cassandra
+
+- name: apply cluster
+  command: "kubectl apply -f /tmp/{{ item }} -n cassandra"
+  with_items:
+    - cassandra-cluster-config.yml
+    - cassandra-cluster.yml

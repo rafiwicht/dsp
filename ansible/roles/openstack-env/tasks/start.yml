@@ -1,0 +1,9 @@
+---
+# tasks file for start os env
+
+- name: start the instances
+  os_server_action:
+    server: "{{ item }}"
+    action: start
+  with_items: "{{ instances }}"
+  environment: "{{ openstack_env }}"

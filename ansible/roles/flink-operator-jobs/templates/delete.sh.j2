@@ -1,0 +1,5 @@
+#!/bin/bash
+
+{% for item in jobs %}
+kubectl delete -f /tmp/{{ item.name }}-job.yml
+{% endfor %}

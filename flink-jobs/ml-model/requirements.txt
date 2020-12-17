@@ -1,0 +1,7 @@
+scikit-learn
+pandas
+pylint
+nltk
+sklearn-json
+sklearn-pandas
+sklearn2pmml

@@ -1,0 +1,10 @@
+---
+# start virtual machines
+
+- name: Create the VMs on SWITCHengines
+  hosts: localhost
+  tasks:
+    - name: start openstack env
+      include_role:
+        name: openstack-env
+        tasks_from: start

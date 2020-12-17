@@ -1,0 +1,22 @@
+---
+# tasks file for kubernetes-spark
+
+- name: copy kubernetes files
+  copy:
+    src: "{{ item }}"
+    dest: "/tmp/"
+  with_items:
+    - spark-jobs-namespace.yml
+    - spark-operator-namespace.yml
+
+- name: apply kubernetes
+  command: "kubectl apply -f /tmp/{{ item }}"
+  with_items:
+    - spark-jobs-namespace.yml
+    - spark-operator-namespace.yml
+
+- name: add helm repo for operator
+  command: helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+
+- name: deploy operator
+  command: helm install incubator/sparkoperator --namespace spark-operator --set sparkJobNamespace=spark-jobs --set enableWebhook=true --generate-name --set serviceAccounts.spark.name=spark

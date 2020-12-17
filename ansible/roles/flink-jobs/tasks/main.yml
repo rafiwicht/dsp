@@ -1,0 +1,30 @@
+---
+# tasks file for flink-jobs
+
+- name: copy id_rsa key for git repository
+  copy:
+    src: id_rsa
+    dest: /home/centos/.ssh/id_rsa
+    owner: centos
+    group: centos
+    mode: 0400
+
+- name: clone git repo
+  git:
+    repo: git@github.com:rafiwicht/flink-jobs.git
+    dest: /home/centos/flink-jobs
+    key_file: /home/centos/.ssh/id_rsa
+    accept_hostkey: yes
+
+- name: install own dependencies
+  command: "mvn clean install -f /home/centos/flink-jobs/{{ item }}/pom.xml"
+  with_items: "{{ flink_helpers }}"
+    
+
+- name: build flink jobs
+  command: "mvn clean package -f /home/centos/flink-jobs/{{ item }}/pom.xml"
+  with_items: "{{ flink_jobs }}"
+
+- name: create flink job
+  shell: "/opt/flink/bin/flink run -d -e kubernetes-session -Dkubernetes.cluster-id=flink-rbd -Dkubernetes.namespace=flink /home/centos/flink-jobs/{{ item }}/target/{{ item }}-1.0.0.jar"
+  with_items: "{{ flink_jobs }}"

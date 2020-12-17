@@ -1,0 +1,84 @@
+---
+# tasks file for master
+
+- name: Initialize the Kubernetes cluster using kubeadm
+  command: "kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-cert-extra-sans={{ ansible_host }}"
+
+- name: Generate join command
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+- name: Export join command
+  set_fact:
+    join_command: "{{ join_command.stdout }}"
+
+- name: create kube dir
+  file:
+    path: /home/centos/.kube
+    state: directory
+    owner: centos
+    group: centos
+
+- name: copy kubeconfig
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/centos/.kube/config
+    remote_src: yes
+    owner: centos
+    group: centos
+
+- name: Setup kubeconfig for vagrant user
+  command: "{{ item }}"
+  with_items:
+    - cp -i /etc/kubernetes/admin.conf /home/centos/.kube/config
+    - chown centos:centos /home/centos/.kube/config
+
+- name: copy calico file
+  copy:
+    src: calico.yml
+    dest: /tmp/calico.yml
+    owner: centos
+    group: centos
+
+- name: Install calico pod network
+  become: false
+  command: kubectl apply -f /tmp/calico.yml
+
+# -Install helm
+- name: download helm
+  get_url:
+    url: https://get.helm.sh/helm-v3.0.3-linux-amd64.tar.gz
+    dest: /tmp/helm.tar.gz
+
+- name: extract helm
+  unarchive:
+    src: /tmp/helm.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: copy helm
+  copy:
+    src: /tmp/linux-amd64/helm
+    dest: /usr/local/bin/helm
+    remote_src: yes
+    mode: 0755
+
+- name: download kustomize
+  get_url:
+    url: https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
+    dest: /tmp/install_kustomize.sh
+    mode: 755
+
+- name: get kustomize
+  become: yes
+  command: /tmp/install_kustomize.sh
+
+- name: copy kustomize to /usr/local/bin
+  become: yes
+  copy:
+    src: /home/centos/kustomize
+    dest: /usr/local/bin/kustomize
+    remote_src: yes
+    owner: root
+    group: root
+    mode: 755

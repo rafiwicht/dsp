@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cassandra-config-manager
+data:
+  application.conf: |-
+    datastax-java-driver {
+      basic.contact-points = [ "cluster1-dc1-service.cass-operator.svc" ]
+
+      basic.request {
+        timeout = 20 seconds
+      }
+
+      basic.load-balancing-policy {
+        local-datacenter = dc1
+      }
+
+      advanced.auth-provider {
+        class = PlainTextAuthProvider
+
+        username = {{ cassandra_user }}
+        password = {{ cassandra_password }}
+      }
+    }
+  rbd-malicious.json: |-
+    {	
+      "keyspace": "malicious",
+      "systemAuth": true,
+      "strategy": {
+        "name": "SimpleStrategy"
+      },
+      "replicationFactor": 2,
+      "override": true,
+      "tables": [{
+        "name": "result",
+        "override": true,
+        "partitionKeys": [{
+          "name": "date",
+          "type": "date"
+        }],
+        "clusteringKeys": [{
+          "name": "timestamp",
+          "type": "timestamp"
+        }],
+        "otherFields": [{
+          "name": "value",
+          "type": "int"
+        }]
+      }]
+    }

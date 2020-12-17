@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ssd1
+  labels:
+    type: local
+spec:
+  storageClassName: disks
+  capacity:
+    storage: 18Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/disks/ssd1"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ssd2
+  labels:
+    type: local
+spec:
+  storageClassName: disks
+  capacity:
+    storage: 18Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/disks/ssd2"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ssd3
+  labels:
+    type: local
+spec:
+  storageClassName: disks
+  capacity:
+    storage: 18Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/disks/ssd3"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ssd4
+  labels:
+    type: local
+spec:
+  storageClassName: disks
+  capacity:
+    storage: 18Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/disks/ssd4"

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  container:
+    build:
+      context: .
+      dockerfile: DockerfileLocal
+    stdin_open: true
+    tty: true
+    privileged: true
+    volumes:
+      - ./example/logstash/:/etc/logstash-config/
+      - ./example/loggen/:/etc/log-generator-config/

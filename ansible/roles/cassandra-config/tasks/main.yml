@@ -1,0 +1,36 @@
+---
+# tasks file for cassandra-config
+
+- name: get cassandra username and password
+  command: kubectl -n cass-operator get secret cluster1-superuser -o json
+  register: result
+
+- name: set cassandra infos
+  set_fact:
+    cassandra_user: "{{ cass_secret['data']['username'] | b64decode }}"
+    cassandra_password: "{{ cass_secret['data']['password'] | b64decode }}"
+  vars:
+    cass_secret: "{{ result['stdout'] | from_json }}"
+
+- name: set system_auth 
+  command: "kubectl -n cass-operator exec -c cassandra {{ item }} -- cqlsh -u {{ cassandra_user }} -p {{ cassandra_password }} --execute=\"ALTER KEYSPACE system_auth WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 3 };\""
+  no_log: no
+  ignore_errors: yes
+  with_items:
+    - cluster1-dc1-default-sts-0
+    - cluster1-dc1-default-sts-1
+    - cluster1-dc1-default-sts-2
+    - cluster1-dc1-default-sts-3
+
+
+- name: set cassandra configurations
+  command: "kubectl -n cass-operator exec -c cassandra cluster1-dc1-default-sts-0 -- cqlsh -u {{ cassandra_user }} -p {{ cassandra_password }} --execute=\"{{ item }}\""
+  no_log: no
+  with_items: "{{ queries }}"
+
+- name: copy cassandra scripts
+  template:
+    src: select.sh.j2
+    dest: "/home/centos/select_{{ item }}.sh"
+    mode: 0700
+  with_items: "{{ tables }}"

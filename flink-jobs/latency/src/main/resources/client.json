@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://rwicht.ch/webserver-access.schema.json",
+    "title": "Event",
+    "description": "An event for the from cleaned client logs",
+    "type": "object",
+    "properties": {
+        "timestamp": {
+            "type": "integer"
+        },
+        "javaFile": {
+            "type": "string"
+        },
+        "thread": {
+            "type": "string"
+        },
+        "logLevel": {
+            "type": "string"
+        },
+        "user": {
+            "type": "string"
+        },
+        "resource": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "timestamp",
+        "javaFile",
+        "thread",
+        "logLevel",
+        "user",
+        "resource"
+    ]
+}

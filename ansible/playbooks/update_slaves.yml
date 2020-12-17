@@ -1,0 +1,10 @@
+---
+
+# Deploy kafka on kubernetes
+
+- name: setup hosts
+  hosts: slaves
+  become: yes
+  roles:
+    - slave
+  

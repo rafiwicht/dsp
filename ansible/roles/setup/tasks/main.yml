@@ -1,0 +1,12 @@
+---
+# tasks file for setup
+
+- name: update/install/configure packages
+  tags:
+    - setup_os
+  include_tasks: packages.yml
+
+- name: configure kubernetes
+  tags:
+    - setup_kub
+  include_tasks: configure.yml

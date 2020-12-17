@@ -1,0 +1,18 @@
+---
+# tasks file for kubernetes-cassandra
+
+- name: copy datastax cassandra operator 
+  copy: 
+    src: cass-operator-manifests.yaml
+    dest: /tmp/cass-operator-manifests.yaml
+
+- name: apply datastax cassandra operator 
+  command: kubectl apply -f /tmp/cass-operator-manifests.yaml
+
+- name: copy cluster.yml
+  copy:
+    src: cassandra-dc1.yml
+    dest: "/tmp/cassandra-dc1.yml"
+
+- name: apply data centers
+  command: kubectl apply -n cass-operator -f /tmp/cassandra-dc1.yml

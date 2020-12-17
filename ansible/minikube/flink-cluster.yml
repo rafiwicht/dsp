@@ -1,0 +1,31 @@
+---
+apiVersion: flinkoperator.k8s.io/v1beta1
+kind: FlinkCluster
+metadata:
+  name: flinksessioncluster
+spec:
+  image:
+    name: flink:1.10
+    pullPolicy: Always
+    pullSecrets: 
+      - name: regcred
+  jobManager:
+    ports:
+      ui: 8081
+    resources:
+      limits:
+        memory: "800Mi"
+        cpu: "200m"
+  taskManager:
+    replicas: 1
+    resources:
+      limits:
+        memory: "4096Mi"
+        cpu: 2
+  flinkProperties:
+    taskmanager.numberOfTaskSlots: "5"
+    taskmanager.memory.flink.size: "3500 mb"
+    state.backend: filesystem
+    state.backend.incremental: "true"
+    state.checkpoints.dir: file:///
+    taskmanager.memory.managed.size: "0 mb"
